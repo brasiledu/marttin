@@ -1,318 +1,154 @@
-# MARTTIN AI - Assistente de Marketing Digital
+# MARTTIN AI v2.0 — Consultor de IA Multi‑Agente
 
-![MARTTIN AI](https://img.shields.io/badge/MARTTIN-AI%20Marketing%20Assistant-blue)
-![Django](https://img.shields.io/badge/Django-5.2.3-green)
-![Python](https://img.shields.io/badge/Python-3.8+-blue)
+![MARTTIN AI](https://img.shields.io/badge/MARTTIN-AI%20Consultor%20Multi%E2%80%91Agente-0f172a)
+![Django](https://img.shields.io/badge/Django-5.x-0f5)
+![LangGraph](https://img.shields.io/badge/LangGraph-0.2%2B-6b7280)
+![LangChain](https://img.shields.io/badge/LangChain-0.2%2B-3b82f6)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB)
 ![License](https://img.shields.io/badge/License-Private-red)
 
-## 📖 Sobre o Projeto
+## Visão Geral
 
-**MARTTIN AI** é uma plataforma de consultoria empresarial baseada em inteligência artificial, desenvolvida especificamente para empreendedores brasileiros. A plataforma oferece análise de estratégias de marketing, geração de conteúdo e chat interativo com IA para otimizar campanhas e estratégias digitais.
+O MARTTIN AI v2.0 evolui para um consultor empresarial multi‑agente, orquestrado com LangGraph, integrando:
 
-### 🎯 Funcionalidades Principais
+- RAG híbrido (denso + BM25) sobre Qdrant Cloud
+- API do IBGE (IPCA) para dados de inflação
+- Analisador de Planilhas (CSV/XLS/XLSX) com Pandas + LLM
+- Orquestração com LangGraph (roteador + estrategista)
+- Interface Django (UI de chat e endpoints) e CLI opcional
+- Memória breve de conversa e configuração via variáveis de ambiente
 
-- **Dashboard Intuitivo**: Visão geral das métricas e atividades
-- **Análise de Marketing**: Sistema de análise inteligente com cadastro de empresa
-- **Geração de Conteúdo**: Criação automática de ideias de conteúdo com templates
-- **Chat com IA**: Assistente inteligente para consultas em tempo real
-- **Autenticação Completa**: Sistema de login, registro e gerenciamento de usuários
+## Principais Componentes
 
-## 🏗️ Arquitetura do Sistema
+- Agente Roteador (Groq): decide quais ferramentas acionar e agrega passos intermediários
+- Agente Estrategista (Groq): sintetiza resposta final a partir do contexto (RAG/IPCA/Planilha)
+- Ferramentas:
+  - RAG (Qdrant): ingestão de PDFs e recuperação híbrida (MiniLM‑L6‑v2 + FastEmbedSparse/BM25)
+  - IPCA (IBGE): consulta a séries históricas de inflação oficial
+  - Analisador de Planilhas: valida caminho/formatos, sumariza shape/dtypes/describe/head e produz insights
+- LangGraph: estado do agente e fluxo com atualização de dados de pesquisa/API/planilha
+- Django: serviço `ai_service.py` integra o grafo ao `chat_api` e UI de chat
 
-### Estrutura do Projeto
+## Requisitos
 
-```
-marttin/
-├── marttin/                    # Configurações do Django
-│   ├── settings.py            # Configurações principais
-│   ├── urls.py               # URLs principais
-│   └── wsgi.py               # WSGI config
-├── agent/                     # App principal
-│   ├── models.py             # Modelos de dados
-│   ├── views.py              # Lógica de negócio
-│   ├── urls.py               # URLs do app
-│   ├── ai_agent.py           # Integração com IA
-│   ├── ai_service.py         # Serviços de IA
-│   ├── templates/            # Templates HTML
-│   │   ├── base.html         # Template base
-│   │   └── agent/            # Templates específicos
-│   └── static/               # Arquivos estáticos
-├── docs/                      # Documentação
-├── logs/                      # Logs da aplicação
-└── manage.py                 # Django CLI
-```
+- Python 3.10+ (recomendado 3.11)
+- Dependências Python (requirements.txt)
+- Conta/endpoint no Qdrant Cloud (RAG)
+- Chave de API Groq
 
-### 🗄️ Modelos de Dados
+## Configuração Rápida
 
-#### Company (Empresa)
-```python
-- user: OneToOneField(User) - Relacionamento com usuário
-- business_name: CharField - Nome do negócio
-- business_type: CharField - Tipo de negócio (e-commerce, serviços, etc.)
-- target_audience: TextField - Público-alvo
-- created_at/updated_at: DateTimeField - Timestamps
-```
+1) Clonar e criar ambiente
 
-#### MarketingAnalysis (Análise de Marketing)
-```python
-- company: ForeignKey(Company) - Relacionamento com empresa
-- current_strategy: TextField - Estratégia atual
-- goals: TextField - Objetivos de marketing
-- analysis_result: JSONField - Resultado da análise
-- created_at: DateTimeField - Data de criação
-```
-
-## 🚀 Configuração do Ambiente
-
-### Pré-requisitos
-
-- Python 3.8+
-- Django 5.2.3
-- SQLite (desenvolvimento) / PostgreSQL (produção)
-- Git
-
-### Instalação
-
-1. **Clone o repositório**
 ```bash
 git clone <repository-url>
 cd marttin
-```
-
-2. **Crie um ambiente virtual**
-```bash
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-# ou
-venv\Scripts\activate     # Windows
-```
-
-3. **Instale as dependências**
-```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. **Configure o banco de dados**
+2) Variáveis de ambiente (.env na raiz)
+
+```env
+# GROQ
+GROQ_API_KEY=sk_groq_xxx
+
+# Qdrant (Cloud)
+QDRANT_URL=https://<cluster-id>.cloud.qdrant.io
+QDRANT_API_KEY=xyz
+# Opcional: QDRANT_COLLECTION=marttin_docs
+```
+
+3) Migrar banco e subir Django
+
 ```bash
 cd marttin
-python manage.py makemigrations
 python manage.py migrate
-```
-
-5. **Crie um superusuário**
-```bash
-python manage.py createsuperuser
-```
-
-6. **Execute o servidor de desenvolvimento**
-```bash
 python manage.py runserver
 ```
 
-7. **Acesse a aplicação**
-- Aplicação: `http://localhost:8000`
-- Admin: `http://localhost:8000/admin`
+Acesse: http://localhost:8000
 
-## 🎨 Design System
+## Ingestão de Documentos (RAG)
 
-### Padrão de Design Unificado
-
-O projeto utiliza um design system consistente baseado em:
-
-- **Tema Escuro**: Background gradiente escuro (#0a0a0a → #1a1a1a)
-- **Glassmorphism**: Efeitos de vidro com backdrop-blur
-- **Tipografia**: Inter (Google Fonts)
-- **Cores Primárias**: 
-  - Azul: #007bff
-  - Verde: #28a745
-  - Cinza: #6c757d
-- **Layout**: Sistema de grid responsivo 60/40
-
-### Componentes Principais
-
-- **Header**: Navegação com logo e menu responsivo
-- **Forms**: Estilização consistente com focus effects
-- **Cards**: Layout glassmorphism para conteúdo
-- **Botões**: Estados hover e active bem definidos
-
-## 🔧 APIs e Endpoints
-
-### Autenticação
-- `POST /login/` - Login de usuário
-- `POST /signup/` - Registro de usuário
-- `POST /logout/` - Logout
-
-### Dashboard
-- `GET /dashboard/` - Página principal do usuário
-
-### Gestão de Empresas
-- `GET /api/company/check/` - Verificar se empresa existe
-- `POST /api/company/register/` - Registrar nova empresa
-- `GET /api/company/data/` - Obter dados da empresa
-
-### Marketing
-- `GET /marketing-analysis/` - Página de análise
-- `POST /api/marketing-analysis/` - Processar análise
-
-### Conteúdo
-- `GET /content-ideas/` - Página de geração de conteúdo
-- `POST /api/content-ideas/` - Gerar ideias de conteúdo
-
-### Chat
-- `GET /chat/` - Interface de chat
-- `POST /api/chat/` - Enviar mensagem para IA
-
-## 🧪 Testes
-
-### Estrutura de Testes
+Antes de usar a busca semântica, faça a ingestão (a coleção será criada no Qdrant):
 
 ```bash
-agent/tests/
-├── test_e2e_selenium.py      # Testes end-to-end
-└── __pycache__/              # Cache de testes
+# No diretório do repositório
+python Agents-ia/agents/agent_rag.py --ingest --pdf "Agents-ia/documentos_marketing/livro.pdf"
 ```
 
-### Executar Testes
+Observação: até a ingestão ocorrer, o retriever pode retornar aviso de coleção inexistente (404) — não é erro crítico.
+
+## CLI Opcional (Perguntas + arquivo)
+
+O grafo pode ser usado no terminal para perguntas diretas, com caminho opcional para planilhas:
 
 ```bash
-# Todos os testes
+python Agents-ia/agents/main.py --question "Como a inflação recente afeta o setor de varejo?" \
+  --file "/caminho/para/minha_planilha.xlsx"
+```
+
+## Endpoints Django
+
+- GET /chat/ — UI do chat
+- POST /api/chat/ — Envia mensagem ao consultor de IA
+- GET /marketing-analysis/ — Página de análise de marketing
+- GET /content-ideas/ — Geração de conteúdo
+
+## Estrutura Relevante
+
+```
+Agents-ia/
+  agents/
+    agent_roteador.py         # Router (Groq, tools calling)
+    agent_estrategista.py     # Estratégia/síntese final
+    agent_rag.py              # Ingestão + recuperação Qdrant
+    agent_api.py              # IBGE IPCA
+    agente_dados.py           # Analisador de Planilhas (CSV/XLS/XLSX)
+    tools_registry.py         # Registro das ferramentas
+    main.py                   # Grafo LangGraph + CLI
+marttin/agent/
+  ai_service.py               # Ponte Django -> LangGraph
+  views.py                    # chat_api usa o grafo (autenticados)
+  templates/agent/chat.html   # UI de chat
+```
+
+## Desenvolvimento
+
+- Compatível com LangChain 0.2+ e LangGraph
+- Evita APIs deprecadas (usa `create_tool_calling_agent` e fallback `llm.bind_tools`)
+- Tools definidos via `langchain_core.tools.Tool`
+- Pandas + openpyxl para análise de planilhas
+
+## Testes
+
+```bash
 python manage.py test
-
-# Testes específicos
-python manage.py test agent.tests.test_e2e_selenium
-
-# Com coverage
-coverage run --source='.' manage.py test
-coverage report
 ```
 
-## 📊 Logging e Monitoramento
+Sugestões:
+- testes de integração para caminhos RAG/IPCA/Planilha + síntese do estrategista
+- testes para endpoints Django (chat_api, etc.)
 
-### Sistema de Logs
+## Changelog (v2.0)
 
-```bash
-logs/
-├── ai_agent.log             # Logs da IA
-├── errors.log              # Logs de erro
-├── marttin.log             # Logs gerais
-├── performance.log         # Métricas de performance
-└── security.log            # Logs de segurança
-```
+- Novo consultor multi‑agente com LangGraph (router + estrategista)
+- RAG híbrido no Qdrant, ingestão de PDFs e recuperação robusta
+- Ferramenta IPCA/IBGE integrada
+- Analisador de Planilhas (CSV/XLS/XLSX) com validação e mensagens de erro claras
+- UI de chat integrada ao grafo via serviço Django
+- CLI opcional (pergunta + arquivo)
+- Requirements consolidados para LangChain 0.2+
+- Substituição de emojis por Bootstrap Icons
+- Preparação para extrair CSS/JS inline para arquivos estáticos
 
-### Configuração de Logs
+## Segurança
 
-- **Level**: INFO (desenvolvimento), WARNING (produção)
-- **Rotation**: Diária com retenção de 30 dias
-- **Format**: JSON estruturado para análise
+- CSRF habilitado nos endpoints Django
+- Variáveis sensíveis em .env (não versionado)
 
-## 🔒 Segurança
+## Licença
 
-### Configurações de Segurança
-
-- **CSRF Protection**: Habilitado em todos os forms
-- **XSS Protection**: Escape automático nos templates
-- **Rate Limiting**: Middleware personalizado
-- **Authentication**: Sistema Django + sessões
-- **HTTPS**: Obrigatório em produção
-
-### Variáveis de Ambiente
-
-```bash
-# .env (não commitado)
-SECRET_KEY=your-secret-key
-DEBUG=False
-DATABASE_URL=postgresql://...
-OPENAI_API_KEY=your-openai-key
-```
-
-## 🚀 Deploy
-
-### Ambientes
-
-- **Desenvolvimento**: SQLite + DEBUG=True
-- **Staging**: PostgreSQL + DEBUG=False
-- **Produção**: PostgreSQL + Cache + CDN
-
-### Checklist de Deploy
-
-- [ ] Variáveis de ambiente configuradas
-- [ ] Banco de dados migrado
-- [ ] Arquivos estáticos coletados
-- [ ] SSL/HTTPS configurado
-- [ ] Logs configurados
-- [ ] Backup automatizado
-
-## 🤝 Contribuição
-
-### Fluxo de Desenvolvimento
-
-1. **Feature Branch**: Crie branch a partir de `main`
-2. **Development**: Desenvolva e teste localmente
-3. **Pull Request**: Abra PR com descrição detalhada
-4. **Code Review**: Aguarde aprovação
-5. **Merge**: Merge após aprovação
-
-### Padrões de Código
-
-- **Python**: PEP 8 + Black formatting
-- **HTML/CSS**: Prettier + consistência com design system
-- **JavaScript**: ES6+ com consistência
-- **Commits**: Conventional Commits
-
-### Estrutura de Branch
-
-```
-main                    # Produção
-├── develop            # Desenvolvimento
-├── feature/user-auth  # Features
-├── hotfix/login-bug   # Correções urgentes
-└── release/v1.0.0     # Releases
-```
-
-## 📚 Documentação Completa
-
-📖 **[Acesse a Documentação Completa](docs/README.md)**
-
-### Documentos Principais
-- **[Visão Geral do Projeto](docs/PROJECT_OVERVIEW.md)** - Resumo executivo
-- **[Setup Rápido](docs/setup/QUICKSTART.md)** - Configuração em 5 minutos
-- **[Onboarding da Equipe](docs/team/TEAM_ONBOARDING.md)** - Guia para novos desenvolvedores
-- **[Guia de Contribuição](docs/development/CONTRIBUTING.md)** - Como contribuir
-
-### Documentação Técnica
-- **[Arquitetura](docs/architecture/)** - Documentação técnica detalhada
-- **[APIs](docs/api/)** - Documentação das APIs
-- **[Deploy](docs/deployment/)** - Guias de implantação
-- **[Testes](docs/TESTING.md)** - Estratégias de teste
-
-## 🐛 Issues e Suporte
-
-### Relatando Bugs
-
-1. Verifique se o bug já foi reportado
-2. Use o template de issue apropriado
-3. Inclua passos para reproduzir
-4. Adicione logs/screenshots relevantes
-
-### Suporte
-
-- **Issues**: Para bugs e melhorias
-- **Discussions**: Para dúvidas gerais
-- **Wiki**: Documentação colaborativa
-
-## 📄 Licença
-
-Este projeto é propriedade privada. Todos os direitos reservados.
-
-## 👥 Equipe
-
-- **Arquitetura**: Sistema modular Django
-- **Frontend**: Design system unificado
-- **Backend**: APIs RESTful + IA integration
-- **DevOps**: Deploy automatizado
-
----
-
-**Última atualização**: 16 de junho de 2025
-
-Para mais informações, consulte a documentação completa em `/docs/` ou entre em contato com a equipe de desenvolvimento.
+Projeto privado. Todos os direitos reservados.

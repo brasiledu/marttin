@@ -965,14 +965,7 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
-    .sales-chart::after {
-        content: '📊';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 24px;
-    }
+    /* Removido conteúdo emoji; ícone será inserido no HTML */
 
     /* Marketing Chart */
     .marketing-chart {
@@ -992,21 +985,7 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
-    .marketing-chart::after {
-        content: '📈';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 24px;
-        background: #1e293b;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+    /* Removido conteúdo emoji; ícone será inserido no HTML */
 
     /* Goals Chart */
     .goals-chart {
@@ -1021,21 +1000,7 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
-    .goals-chart::after {
-        content: '🎯';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 60px;
-        height: 60px;
-        background: #1e293b;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-    }
+    /* Removido conteúdo emoji; ícone será inserido no HTML */
 
     .metrics-panel {
         flex: 1;
@@ -1427,7 +1392,7 @@
                 <div class="phone-screen">
                     <div class="screen-header">
                         <div class="profile-icon">M</div>
-                        <div>🔒</div>
+                        <div><i class="bi bi-lock"></i></div>
                     </div>
                     <div class="chat-messages">
                         <div class="chat-bubble user">
@@ -1446,9 +1411,9 @@
                 </div>
             </div>
             <div class="floating-elements">
-                <div class="floating-icon">📊</div>
-                <div class="floating-icon">💡</div>
-                <div class="floating-icon">📈</div>
+                <div class="floating-icon"><i class="bi bi-graph-up"></i></div>
+                <div class="floating-icon"><i class="bi bi-lightbulb"></i></div>
+                <div class="floating-icon"><i class="bi bi-graph-up-arrow"></i></div>
             </div>
         </div>
     </div>
@@ -1462,17 +1427,17 @@
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">💼</div>
+                <div class="feature-icon"><i class="bi bi-briefcase"></i></div>
                 <h3>Consultoria Instantânea</h3>
                 <p>Faça perguntas sobre finanças, marketing ou operações e receba respostas práticas em segundos.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">📋</div>
+                <div class="feature-icon"><i class="bi bi-clipboard-check"></i></div>
                 <h3>Templates Práticos</h3>
                 <p>Acesse modelos de plano de negócios, SWOT e fluxo de caixa para aplicar imediatamente.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">🎯</div>
+                <div class="feature-icon"><i class="bi bi-bullseye"></i></div>
                 <h3>Estratégias Personalizadas</h3>
                 <p>Receba estratégias para vendas, precificação e crescimento adaptadas ao seu negócio.</p>
             </div>
@@ -1551,15 +1516,15 @@
                         </div>
                         <div class="chat-simulation">
                             <div class="chat-message">
-                                <div class="question">💬 "Como aumentar vendas?"</div>
+                                <div class="question"><i class="bi bi-chat-dots"></i> "Como aumentar vendas?"</div>
                                 <div class="answer">3 estratégias prontas para você!</div>
                             </div>
                             <div class="chat-message">
-                                <div class="question">💰 "Qual preço cobrar?"</div>
+                                <div class="question"><i class="bi bi-cash-stack"></i> "Qual preço cobrar?"</div>
                                 <div class="answer">R$ 47,50 baseado em seus custos</div>
                             </div>
                             <div class="chat-message">
-                                <div class="question">📱 "Ideias para Instagram?"</div>
+                                <div class="question"><i class="bi bi-phone"></i> "Ideias para Instagram?"</div>
                                 <div class="answer">5 posts criados e prontos!</div>
                             </div>
                         </div>
@@ -1588,11 +1553,11 @@
                 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
                     <div style="background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); padding: 1rem 1.5rem; border-radius: 12px; flex: 1; min-width: 200px;">
-                        <div style="color: #fbbf24; font-weight: 600; margin-bottom: 0.5rem;">📊 Dashboard Inteligente</div>
+                        <div style="color: #fbbf24; font-weight: 600; margin-bottom: 0.5rem;"><i class="bi bi-graph-up"></i> Dashboard Inteligente</div>
                         <div style="color: #94a3b8; font-size: 0.9rem; line-height: 1.4;">Visualize KPIs em tempo real com gráficos interativos</div>
                     </div>
                     <div style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); padding: 1rem 1.5rem; border-radius: 12px; flex: 1; min-width: 200px;">
-                        <div style="color: #3b82f6; font-weight: 600; margin-bottom: 0.5rem;">🎯 Metas Personalizadas</div>
+                        <div style="color: #3b82f6; font-weight: 600; margin-bottom: 0.5rem;"><i class="bi bi-bullseye"></i> Metas Personalizadas</div>
                         <div style="color: #94a3b8; font-size: 0.9rem; line-height: 1.4;">Defina objetivos SMART com acompanhamento automático</div>
                     </div>
                 </div>
@@ -1612,7 +1577,9 @@
                             </div>
                             <div class="interface-content">
                                 <div class="chart-container">
-                                    <div class="sales-chart"></div>
+                                    <div class="sales-chart" style="position:relative; display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-bar-chart-line" style="font-size:24px;"></i>
+                                    </div>
                                 </div>
                                 <div class="metrics-panel">
                                     <div class="metric-bar sales-bar-1"></div>
@@ -1635,7 +1602,9 @@
                             </div>
                             <div class="interface-content">
                                 <div class="chart-container">
-                                    <div class="marketing-chart"></div>
+                                    <div class="marketing-chart" style="position:relative; display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-graph-up-arrow" style="font-size:24px;"></i>
+                                    </div>
                                 </div>
                                 <div class="metrics-panel">
                                     <div class="metric-bar marketing-bar-1"></div>
@@ -1658,7 +1627,9 @@
                             </div>
                             <div class="interface-content">
                                 <div class="chart-container">
-                                    <div class="pie-chart"></div>
+                                    <div class="pie-chart" style="position:relative; display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-pie-chart" style="font-size:24px;"></i>
+                                    </div>
                                 </div>
                                 <div class="metrics-panel">
                                     <div class="metric-bar"></div>
@@ -1681,7 +1652,9 @@
                             </div>
                             <div class="interface-content">
                                 <div class="chart-container">
-                                    <div class="goals-chart"></div>
+                                    <div class="goals-chart" style="position:relative; display:flex; align-items:center; justify-content:center;">
+                                        <i class="bi bi-bullseye" style="font-size:24px;"></i>
+                                    </div>
                                 </div>
                                 <div class="metrics-panel">
                                     <div class="metric-bar goals-bar-1"></div>

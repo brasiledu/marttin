@@ -529,14 +529,14 @@
 <div class="chat-container">
     {% if not user.is_authenticated %}
     <div class="demo-notice">
-        🎯 Modo Demo - Funcionalidades limitadas. 
+        <i class="bi bi-bullseye"></i> Modo Demo - Funcionalidades limitadas. 
         <a href="{% url 'agent:signup' %}">Criar conta gratuita</a> para acesso completo.
     </div>
     {% endif %}
 
     <div class="chat-messages" id="chatMessages">
         <div class="empty-state" id="emptyState">
-            <div class="empty-icon">💬</div>
+            <div class="empty-icon"><i class="bi bi-chat-dots"></i></div>
             <h2 class="empty-title">Como posso ajudar você hoje?</h2>
             <p class="empty-description">
                 Faça uma pergunta ou escolha uma das sugestões abaixo para começar nossa conversa.
@@ -575,7 +575,7 @@
 
         <div class="typing-indicator" id="typingIndicator">
             <div class="typing-content-wrapper">
-                <div class="message-avatar" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); font-weight: 600;">🤖</div>
+                <div class="message-avatar" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); font-weight: 600;"><i class="bi bi-cpu"></i></div>
                 <div class="typing-content">
                     <div class="typing-dots"></div>
                     <div class="typing-dots"></div>
@@ -637,7 +637,7 @@ function addMessage(content, isUser = false) {
     
     const avatarDiv = document.createElement('div');
     avatarDiv.className = 'message-avatar';
-    avatarDiv.innerHTML = isUser ? '👤' : '🤖';
+    avatarDiv.innerHTML = isUser ? '<i class="bi bi-person"></i>' : '<i class="bi bi-cpu"></i>';
     
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
@@ -711,11 +711,11 @@ async function sendMessage() {
         // Hide typing indicator
         hideTyping();
         
-        if (data.status === 'success') {
+        if (data.success) {
             addMessage(data.response, false);
             conversationHistory.push({role: 'assistant', content: data.response});
         } else {
-            addMessage('Desculpe, ocorreu um erro. Tente novamente.', false);
+            addMessage('Desculpe, ocorreu um erro: ' + (data.error || 'Tente novamente.'), false);
         }
     } catch (error) {
         hideTyping();

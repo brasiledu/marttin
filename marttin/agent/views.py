@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Company, MarketingAnalysis
+from .ai_service import ai_service
 
 # View principal (homepage)
 def index(request):
@@ -80,19 +81,27 @@ def chat_api(request):
         try:
             data = json.loads(request.body)
             message = data.get('message', '').strip()
-            
+            arquivo = data.get('file_path')  # opcional
+            pergunta_arquivo = data.get('file_question')  # opcional
+
             if not message:
                 return JsonResponse({
                     'success': False,
                     'error': 'Mensagem não pode estar vazia'
                 })
-            
-            # Verificar se usuário está logado
+
             if request.user.is_authenticated:
-                # Resposta completa para usuários logados
-                response = f"✅ **Marttin AI (Versão Completa)**\n\nObrigado pela sua mensagem: '{message}'.\n\n🤖 Como usuário logado, você tem acesso a todas as funcionalidades:\n• Histórico de conversas salvo\n• Análises de marketing personalizadas\n• Geração de conteúdo ilimitada\n• Relatórios detalhados\n\nEsta é uma resposta simulada. Configure a API do Google Gemini para funcionalidade completa."
+                try:
+                    result = ai_service.run_ai_consultor(message, arquivo, pergunta_arquivo)
+                    response = result.get('resposta_final') or 'Sem resposta.'
+                except Exception as e:
+                    response = f"Erro ao processar a solicitação de IA: {e}"
+                return JsonResponse({
+                    'success': True,
+                    'response': response,
+                    'is_demo': False
+                })
             else:
-                # Resposta limitada para usuários não logados (demo)
                 demo_responses = [
                     f"🎯 **Demo Marttin AI**\n\nSua pergunta: '{message}'\n\n💡 **Resposta demonstrativa:**\nEssa é uma funcionalidade incrível! O Marttin AI pode ajudar você com:\n• Consultoria empresarial instantânea\n• Análise de mercado personalizada\n• Geração de conteúdo para redes sociais\n• Estratégias de marketing\n\n🔒 **Crie sua conta gratuita** para ter acesso completo e salvar suas conversas!",
                     
@@ -103,19 +112,17 @@ def chat_api(request):
                 
                 import random
                 response = random.choice(demo_responses)
-            
-            return JsonResponse({
-                'success': True,
-                'response': response,
-                'is_demo': not request.user.is_authenticated
-            })
-            
+                return JsonResponse({
+                    'success': True,
+                    'response': response,
+                    'is_demo': True
+                })
         except Exception as e:
             return JsonResponse({
                 'success': False,
                 'error': str(e)
             })
-    
+
     return JsonResponse({'success': False, 'error': 'Método não permitido'})
 
 # Análise de Marketing (requer login)
