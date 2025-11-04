@@ -18,6 +18,17 @@
     
     <!-- CSS Principal -->
     <link rel="stylesheet" href="{% static 'agent/css/style.css' %}">
+    {% if user.is_authenticated %}
+    <!-- CSS do layout do app (sidebar/topbar) -->
+    <link rel="stylesheet" href="{% static 'agent/css/sidebar.css' %}">
+   
+    {% endif %}
+    
+    <!-- GitHub Markdown CSS (dark) para estilizar .markdown-body -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.5.1/github-markdown-dark.min.css">
+    
+    <!-- Estilos para Markdown estilo GitHub -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css" integrity="sha512-rE8zSI7Jf3+0S6gQ2Qq2fd6qCDoP2MqC0B/8k2Vb0DlRd6O4p3mQZQ2/7nVqkBvQ3n3t1zXoF6J6mQkXG2Zp5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <!-- CSS Extra por página -->
     {% block extra_css %}{% endblock %}
@@ -30,8 +41,9 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'agent/images/favicon.ico' %}">
 </head>
-<body>
-    <!-- Header/Navegação -->
+<body data-auth="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+    {% if not user.is_authenticated %}
+    <!-- Header/Navegação (apenas landing) -->
     <header class="header">
         <nav class="nav container">
             <!-- Logo -->
@@ -75,10 +87,62 @@
             </div>
         </nav>
     </header>
+    {% endif %}
 
     <!-- Conteúdo Principal -->
     <main>
-        <!-- Mensagens do Django -->
+        {% if user.is_authenticated %}
+        <!-- Layout do app com Sidebar + Topbar -->
+        <div class="dashboard-layout" id="dashboardLayout">
+            <!-- Sidebar global do app -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-brand">
+                    <span class="brand">MARTTIN</span>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="{% url 'agent:dashboard' %}" class="nav-link{% if request.resolver_match.url_name == 'dashboard' %} active{% endif %}"><i class="bi bi-speedometer2"></i> <span>Dashboard</span></a>
+                    <a href="{% url 'agent:analyses' %}" class="nav-link{% if request.resolver_match.url_name == 'analyses' %} active{% endif %}"><i class="bi bi-bar-chart-line"></i> <span>Minhas Análises</span></a>
+                    <a href="{% url 'agent:chat' %}" class="nav-link{% if request.resolver_match.url_name == 'chat' %} active{% endif %}"><i class="bi bi-chat-dots"></i> <span>Chat Estratégico</span></a>
+                    <div class="sidebar-separator"></div>
+                    <a href="{% url 'agent:logout' %}" class="nav-link"><i class="bi bi-box-arrow-right"></i> <span>Sair</span></a>
+                </nav>
+            </aside>
+            
+            <!-- Área principal -->
+            <div class="main">
+                <!-- Topbar global do app -->
+                <header class="topbar">
+                    <button class="icon-btn" id="toggleSidebar" aria-label="Alternar menu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <div class="search">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="globalSearch" placeholder="Pesquisar...">
+                    </div>
+                    <div class="topbar-actions">
+                        <button class="icon-btn" id="notificationsBtn" aria-label="Notificações">
+                            <i class="bi bi-bell"></i>
+                            <span class="badge" id="notificationsBadge">3</span>
+                        </button>
+                        <div class="profile" id="profileMenu">
+                            <button class="profile-btn">
+                                <i class="bi bi-person-circle"></i>
+                                <span>{{ user.first_name|default:user.username }}</span>
+                                <i class="bi bi-caret-down-fill"></i>
+                            </button>
+                            <div class="profile-dropdown" id="profileDropdown">
+                                <a href="{% url 'agent:profile' %}"><i class="bi bi-person"></i> <span>Perfil</span></a>
+                                <a href="#"><i class="bi bi-sliders"></i> <span>Preferências</span></a>
+                                <a href="{% url 'agent:logout' %}"><i class="bi bi-box-arrow-right"></i> <span>Sair</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                
+                <!-- Seção de conteúdo das páginas -->
+                <section class="content">
+        {% endif %}
+
         {% if messages %}
             <div class="container" style="padding-top: 1rem;">
                 {% for message in messages %}
@@ -90,12 +154,17 @@
             </div>
         {% endif %}
         
-        <!-- Conteúdo da Página -->
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
+
+        {% if user.is_authenticated %}
+                </section>
+            </div>
+        </div>
+        {% endif %}
     </main>
     
-    <!-- Footer -->
+    {% if not user.is_authenticated %}
+    <!-- Footer (apenas landing) -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-main">
@@ -118,21 +187,22 @@
             </div>
         </div>
     </footer>
+    {% endif %}
 
     <!-- JavaScript Principal -->
     <script>
-        // Smooth scroll para links âncora
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
+        // Smooth scroll para links âncora (landing)
+        (function(){
+            const isAuth = document.body.getAttribute('data-auth') === 'true';
+            if (isAuth) return;
+            document.querySelectorAll("a[href^='#']").forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                });
             });
-        });
+        })();
         
         // Auto-dismiss alerts
         setTimeout(function() {
@@ -143,6 +213,11 @@
             });
         }, 5000);
     </script>
+    
+    {% if user.is_authenticated %}
+    <!-- JS do layout do app (sidebar/topbar) -->
+    <script src="{% static 'agent/js/sidebar.js' %}"></script>
+    {% endif %}
     
     <!-- JavaScript Extra por página -->
     {% block extra_js %}{% endblock %}

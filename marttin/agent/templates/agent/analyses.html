@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% load markdown_extras %}
+
+{% block title %}Minhas Análises - Marttin AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'agent/css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="widget">
+  <div class="widget-header">
+    <h3><i class="bi bi-folder2-open"></i> Minhas Análises</h3>
+    <a href="{% url 'agent:chat' %}" class="btn-primary"><i class="bi bi-plus"></i> Solicitar Nova Análise</a>
+  </div>
+  {% if not company %}
+    <div class="insight">
+      <i class="bi bi-info-circle"></i>
+      <div>
+        <strong>Configure o Perfil</strong>
+        <p>Cadastre os dados da sua empresa em <a href="{% url 'agent:profile' %}">Perfil</a> para melhores resultados.</p>
+      </div>
+    </div>
+  {% endif %}
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nome da Análise</th>
+          <th>Data da Solicitação</th>
+          <th>Status</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if analyses %}
+          {% for a in analyses %}
+            <tr>
+              <td>{{ a }}</td>
+              <td>{{ a.created_at|date:"d/m/Y" }}</td>
+              <td>Concluído</td>
+              <td><a href="{% url 'agent:analysis_detail' a.id %}" class="btn btn-secondary">Ver Análise &gt;</a></td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="4">Nenhuma análise encontrada. Solicite uma nova análise.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+{% load markdown_extras %}
+
+{% block title %}Detalhe da Análise - Marttin AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'agent/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'agent/css/analysis_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="widget">
+  <div class="widget-header header-flex">
+    <div>
+      <h3><i class="bi bi-clipboard-data"></i> {{ analysis }}</h3>
+      <p class="kpi-trend">Análise gerada em {{ analysis.created_at|date:"d/m/Y H:i" }}</p>
+    </div>
+    <a href="#" class="btn-primary"><i class="bi bi-file-earmark-arrow-down"></i> Baixar PDF</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="t1"><i class="bi bi-lightbulb"></i> Insights</button>
+    <button class="tab-btn" data-tab="t2"><i class="bi bi-check2-circle"></i> Recomendações</button>
+    <button class="tab-btn" data-tab="t3"><i class="bi bi-rocket"></i> Estratégias de Crescimento</button>
+    <button class="tab-btn" data-tab="t4"><i class="bi bi-list-task"></i> Próximos Passos</button>
+  </div>
+
+  <div id="t1" class="tab-panel active">
+    <div class="insights">
+      <div class="insight">
+        <i class="bi bi-info-circle"></i>
+        <div>
+          <strong>Resumo da Análise</strong>
+          <div class="markdown-body">{{ insights_text|markdownify }}</div>
+        </div>
+      </div>
+    </div>
+    <!-- Espaço para KPIs/Gráficos futuros persistidos -->
+    <div class="insight">
+      <i class="bi bi-graph-up"></i>
+      <div>
+        <strong>KPIs e Gráficos</strong>
+        <p>Quando a persistência de resultados for implementada, os KPIs e gráficos desta análise aparecerão aqui.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="t2" class="tab-panel">
+    <div class="insights">
+      <div class="insight">
+        <i class="bi bi-lightning"></i>
+        <div>
+          <strong>Recomendações</strong>
+          <div class="markdown-body">{{ recommendations|markdownify }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="t3" class="tab-panel">
+    <div class="insights">
+      <div class="insight">
+        <i class="bi bi-rocket-takeoff"></i>
+        <div>
+          <strong>Estratégias de Crescimento</strong>
+          <div class="markdown-body">{{ growth|markdownify }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="t4" class="tab-panel">
+    <div class="insights">
+      <div class="insight">
+        <i class="bi bi-list-check"></i>
+        <div>
+          <strong>Próximos Passos</strong>
+          <div class="markdown-body">{{ next_steps|markdownify }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'agent/js/analysis_detail.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,276 @@
+/* MARTTIN - Content Ideas Page (usa o mesmo tema do dashboard/sidebar) */
+:root {
+  --bg: #0f172a;
+  --panel: rgba(255, 255, 255, .04);
+  --border: rgba(255, 255, 255, .08);
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --brand: #fbbf24;
+  --brand-2: #f59e0b;
+}
+
+.ci-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+/* Grid principal: formulário à esquerda, resultados/insights à direita */
+.ci-grid {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 16px;
+}
+
+.widget {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.widget-header h3,
+.widget-header i {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Formulário */
+.ci-form .form-group {
+  margin-bottom: 14px;
+}
+
+.ci-form label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+.ci-form input,
+.ci-form select,
+.ci-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, .04);
+  color: var(--text);
+}
+
+.ci-form input:focus,
+.ci-form select:focus,
+.ci-form textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
+.ci-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ci-form .form-hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* Templates rápidos */
+.quick-templates {
+  margin-top: 12px;
+}
+
+.qt-header {
+  color: var(--muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qt-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.qt-btn {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.qt-btn:hover {
+  border-color: rgba(251, 191, 36, .35);
+  background: rgba(251, 191, 36, .08);
+}
+
+.qt-btn strong {
+  display: block;
+  font-size: 12px;
+}
+
+.qt-btn small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Resultados */
+.ci-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px;
+}
+
+.empty-icon {
+  font-size: 24px;
+  color: var(--brand);
+  margin-bottom: 8px;
+}
+
+.loading {
+  display: none;
+  text-align: center;
+  color: var(--muted);
+  padding: 24px;
+}
+
+.loading[aria-hidden="false"],
+.loading.show {
+  display: block;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 255, 255, .1);
+  border-top: 3px solid var(--brand);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.results {
+  display: grid;
+  gap: 10px;
+}
+
+.result-card {
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.result-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.result-content {
+  color: var(--text);
+}
+
+/* Insights */
+.insights-list {
+  display: grid;
+  gap: 10px;
+}
+
+.insight-item {
+  display: flex;
+  gap: 10px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.insight-item i {
+  color: var(--muted);
+}
+
+.insight-item strong {
+  color: var(--text);
+  display: block;
+}
+
+.insight-item .text {
+  color: var(--muted);
+}
+
+/* Botões */
+.btn-primary {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #0b1324;
+  border: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+/* Responsivo */
+@media (max-width: 1024px) {
+  .ci-grid {
+    grid-template-columns: 1fr;
+  }
+  .ci-form .form-row {
+    grid-template-columns: 1fr;
+  }
+  .qt-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .qt-grid {
+    grid-template-columns: 1fr;
+  }
+}

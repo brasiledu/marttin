@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Perfil - Marttin AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'agent/css/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'agent/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="widget" id="profilePage">
+  <div class="widget-header">
+    <h3><i class="bi bi-person-gear"></i> Perfil e Configurações</h3>
+  </div>
+
+  <!-- Seção 1: Informações da Conta -->
+  <div class="section">
+    <h4 class="section-title"><i class="bi bi-person-circle"></i> Informações da Conta</h4>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Nome do Usuário</label>
+        <input type="text" value="{{ user.first_name|default:user.username }}" disabled>
+      </div>
+      <div class="form-group">
+        <label>Email de Acesso</label>
+        <input type="email" value="{{ user.email }}" disabled>
+      </div>
+      <div class="form-group">
+        <label>Plano</label>
+        <input type="text" value="MVP Gratuito" disabled>
+      </div>
+      <div class="form-actions right">
+        <a href="{% url 'agent:logout' %}" class="btn btn-secondary"><i class="bi bi-box-arrow-right"></i> Sair (Logout)</a>
+        <button type="button" class="btn btn-danger" id="btnDeleteAccount"><i class="bi bi-trash"></i> Apagar Conta e Dados</button>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" class="profile-form" id="profileForm">
+    {% csrf_token %}
+
+    <!-- Seção 2: Identidade da Empresa -->
+    <div class="section">
+      <h4 class="section-title"><i class="bi bi-building"></i> Identidade da Empresa</h4>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="business_name">Nome da Empresa</label>
+          <input id="business_name" name="business_name" type="text" value="{{ company.business_name|default:'' }}" required>
+        </div>
+        <div class="form-group">
+          <label for="business_type">Setor de Atuação</label>
+          <select id="business_type" name="business_type" required>
+            <option value="" disabled {% if not company %}selected{% endif %}>Selecione</option>
+            {% for value,label in business_type_choices %}
+              <option value="{{ value }}" {% if company and company.business_type == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="years_active">Tempo de Atividade</label>
+          <select id="years_active" name="years_active">
+            <option value="" {% if not company or not company.years_active %}selected{% endif %}>Selecione</option>
+            <option value="lt1" {% if company and company.years_active == 'lt1' %}selected{% endif %}>< 1 ano</option>
+            <option value="1-3" {% if company and company.years_active == '1-3' %}selected{% endif %}>1-3 anos</option>
+            <option value="gt3" {% if company and company.years_active == 'gt3' %}selected{% endif %}>+3 anos</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="annual_revenue">Porte/Faturamento Anual</label>
+          <select id="annual_revenue" name="annual_revenue">
+            <option value="" {% if not company or not company.annual_revenue %}selected{% endif %}>Selecione</option>
+            <option value="mei" {% if company and company.annual_revenue == 'mei' %}selected{% endif %}>MEI (até R$ 81k)</option>
+            <option value="me" {% if company and company.annual_revenue == 'me' %}selected{% endif %}>ME (R$ 81k - R$ 360k)</option>
+            <option value="epp" {% if company and company.annual_revenue == 'epp' %}selected{% endif %}>EPP (R$ 360k - R$ 4.8M)</option>
+            <option value="other" {% if company and company.annual_revenue == 'other' %}selected{% endif %}>Outro / Não sei</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="employees">Número de Funcionários</label>
+          <select id="employees" name="employees">
+            <option value="" {% if not company or not company.employees %}selected{% endif %}>Selecione</option>
+            <option value="solo" {% if company and company.employees == 'solo' %}selected{% endif %}>Eu sozinho</option>
+            <option value="1-5" {% if company and company.employees == '1-5' %}selected{% endif %}>1-5</option>
+            <option value="6-20" {% if company and company.employees == '6-20' %}selected{% endif %}>6-20</option>
+            <option value="20+" {% if company and company.employees == '20+' %}selected{% endif %}>+20</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção 3: O Coração do Negócio -->
+    <div class="section">
+      <h4 class="section-title"><i class="bi bi-heart-pulse"></i> O Coração do Negócio</h4>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="short_description">Descrição Curta</label>
+          <textarea id="short_description" name="short_description" rows="2" placeholder="Descreva seu negócio em uma frase.">{{ company.short_description|default:'' }}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="target_audience">Público-Alvo (ICP)</label>
+          <textarea id="target_audience" name="target_audience" rows="3" placeholder="Para quem você vende? Descreva seu cliente ideal." required>{{ company.target_audience|default:'' }}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="competitive_advantage">Diferencial Competitivo</label>
+          <textarea id="competitive_advantage" name="competitive_advantage" rows="3" placeholder="Por que compram de você?">{{ company.competitive_advantage|default:'' }}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="competitors">Principais Concorrentes</label>
+          <textarea id="competitors" name="competitors" rows="2" placeholder="Cite seus 3 maiores concorrentes.">{{ company.competitors|default:'' }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção 4: Objetivos e Desafios -->
+    <div class="section">
+      <h4 class="section-title"><i class="bi bi-bullseye"></i> Objetivos e Desafios</h4>
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="primary_goal">Meu Principal Objetivo</label>
+          <select id="primary_goal" name="primary_goal">
+            <option value="" {% if not company or not company.primary_goal %}selected{% endif %}>Selecione</option>
+            <option value="increase_sales" {% if company and company.primary_goal == 'increase_sales' %}selected{% endif %}>Aumentar minhas vendas</option>
+            <option value="reduce_costs" {% if company and company.primary_goal == 'reduce_costs' %}selected{% endif %}>Reduzir meus custos</option>
+            <option value="organize_finances" {% if company and company.primary_goal == 'organize_finances' %}selected{% endif %}>Organizar minhas finanças</option>
+            <option value="improve_marketing" {% if company and company.primary_goal == 'improve_marketing' %}selected{% endif %}>Melhorar meu marketing</option>
+            <option value="exploring" {% if company and company.primary_goal == 'exploring' %}selected{% endif %}>Apenas explorando</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="main_challenge">Meu Maior Desafio</label>
+          <textarea id="main_challenge" name="main_challenge" rows="3" placeholder="Qual é o principal problema que você quer resolver com o Marttin?">{{ company.main_challenge|default:'' }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção 5: Fontes de Dados -->
+    <div class="section" id="data-sources">
+      <h4 class="section-title"><i class="bi bi-database"></i> Fontes de Dados</h4>
+      <div class="form-group">
+        <label>Upload de Arquivos (CSV/XLS/XLSX)</label>
+        <form method="post" enctype="multipart/form-data" class="inline" id="uploadForm">
+          {% csrf_token %}
+          <input type="hidden" name="upload_file" value="1">
+          <input type="file" name="data_file" accept=".csv,.xls,.xlsx" required>
+          <button type="submit" class="btn"><i class="bi bi-upload"></i> Enviar</button>
+        </form>
+      </div>
+      <div class="form-group">
+        <label>Histórico de Arquivos</label>
+        <div class="file-history">
+          {% if request.user.file_uploads.all %}
+            <ul>
+            {% for f in request.user.file_uploads.all %}
+              <li><i class="bi bi-file-earmark-spreadsheet"></i> {{ f.file_name }} <small class="muted">({{ f.uploaded_at|date:"d/m/Y H:i" }})</small></li>
+            {% endfor %}
+            </ul>
+          {% else %}
+            <p class="muted">Nenhum arquivo enviado ainda.</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Integrações (Visão de Futuro)</label>
+        <input type="text" value="Em breve: Conta Azul, Bling, etc." disabled>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary"><i class="bi bi-save"></i> Salvar Perfil</button>
+      <a href="{% url 'agent:dashboard' %}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Voltar</a>
+    </div>
+  </form>
+
+  <!-- Form oculto para apagar conta -->
+  <form method="post" id="deleteAccountForm" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="delete_account" value="1">
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'agent/js/profile.js' %}"></script>
+{% endblock %}

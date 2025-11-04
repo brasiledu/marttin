@@ -1,65 +1,45 @@
 # Django Framework
-Django
+Django>=4.2,<5.0
 
-# Database
+# Formatação e renderização de conteúdo
+bleach>=6.0.0,<7.0.0
+Markdown>=3.6,<4.0
+pymdown-extensions>=10.0,<11.0
+Pygments>=2.17,<3.0
 
+# LangChain - Framework para aplicações com LLMs
+langchain>=0.2.0,<0.3.0
+langchain-core>=0.2.0,<0.3.0
+langchain-community>=0.2.0,<0.3.0
 
-# API and HTTP
-requests
-djangorestframework
+# LangChain - Integrações específicas
+langchain-groq>=0.1.0,<0.2.0
+langchain-huggingface>=0.0.1,<0.1.0
+langchain-qdrant>=0.1.0,<0.2.0
 
-# AI and ML (LangChain moderno + LangGraph + provedores)
-langchain
-langchain-core
-langchain-community
-langchain-experimental
-langgraph
+# LangGraph - Orquestração de agentes multi-step
+langgraph>=0.1.0,<0.2.0
 
-# Provedor Groq
-langchain-groq
-groq
+# Qdrant - Vector Database
+qdrant-client>=1.7.0,<2.0.0
 
-# Vetorização / RAG
-qdrant-client
-langchain-qdrant
-langchain-huggingface
-sentence-transformers
-fastembed
-pypdf
-langchain-text-splitters
+# Análise de dados
+pandas>=2.0.0,<3.0.0
+openpyxl>=3.1.0,<4.0.0
 
-# Dados / Análise
-pandas
-openpyxl  # suporte a Excel (xlsx/xls)
+# Processamento de documentos PDF
+PyPDF2>=3.0.0,<4.0.0
 
-# Utilidades de busca/markdown usadas nos agentes
-duckduckgo-search
-markdownify
+# HTTP Requests
+requests>=2.31.0,<3.0.0
 
-# Environment and Configuration
-python-decouple
-python-dotenv
+# Variáveis de ambiente
+python-dotenv>=1.0.0,<2.0.0
 
-# Development and Testing
-pytest
-pytest-django
-pytest-cov
-selenium
-coverage
+# HuggingFace - Embeddings e modelos
+sentence-transformers>=2.2.0,<3.0.0
+transformers>=4.35.0,<5.0.0
+torch>=2.0.0,<3.0.0
 
-# Security
-django-cors-headers
-django-ratelimit
-
-# Monitoring and Logging
-prometheus-client
-
-# Utilities
-Pillow  # Image processing
-whitenoise  # Static files serving
-gunicorn  # WSGI server for production
-
-# Development tools (optional)
-black  # Code formatting
-flake8   # Linting
-pre-commit  # Git hooks
+# FastEmbed - Embeddings rápidos para Qdrant
+fastembed>=0.2.0,<0.3.0

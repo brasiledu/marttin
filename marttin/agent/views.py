@@ -8,8 +8,14 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import Company, MarketingAnalysis
+from django.utils.dateparse import parse_date
+from django.utils import timezone
+from django.conf import settings
+import os
+from .models import Company, MarketingAnalysis, FileUpload
 from .ai_service import ai_service
+# Adiciona utilitário para renderização Markdown segura
+from .utils.markdown_utils import render_markdown
 
 # View principal (homepage)
 def index(request):
@@ -96,9 +102,11 @@ def chat_api(request):
                     response = result.get('resposta_final') or 'Sem resposta.'
                 except Exception as e:
                     response = f"Erro ao processar a solicitação de IA: {e}"
+                html = render_markdown(response or '')
                 return JsonResponse({
                     'success': True,
                     'response': response,
+                    'response_html': html,
                     'is_demo': False
                 })
             else:
@@ -112,9 +120,11 @@ def chat_api(request):
                 
                 import random
                 response = random.choice(demo_responses)
+                html = render_markdown(response or '')
                 return JsonResponse({
                     'success': True,
                     'response': response,
+                    'response_html': html,
                     'is_demo': True
                 })
         except Exception as e:
@@ -604,3 +614,194 @@ def adjust_tone(idea, tone):
         idea = idea.replace('📊', '🌟').replace('💼', '✨')
     
     return idea
+
+@login_required
+@csrf_exempt
+def dashboard_data_api(request):
+    """API que fornece dados do dashboard via agente (Estrategista/Data Analyst).
+    Aceita opcionalmente ?file_path= para direcionar análise de planilha.
+    """
+    try:
+        file_path = request.GET.get('file_path')
+        prompt = (
+            "Você é o Estrategista do Marttin. Gere SOMENTE um JSON válido (sem texto extra) com este formato: "
+            "{"
+            "\"kpis\": {\"faturamento_mes\": number, \"novos_clientes\": number, \"cac\": number},"
+            " \"cashflow\": {\"labels\": string[], \"entradas\": number[], \"saidas\": number[]},"
+            " \"channels\": {\"labels\": string[], \"values\": number[]},"
+            " \"latest_sales\": [{\"id\": number, \"data\": string, \"cliente\": string, \"canal\": string, \"valor\": number, \"status\": string}],"
+            " \"insights\": [{\"icon\": string, \"title\": string, \"text\": string}]"
+            "}"
+            " Se uma planilha for fornecida, calcule KPIs a partir dela; caso contrário, use valores plausíveis."
+        )
+        result = ai_service.run_ai_consultor(prompt, arquivo=file_path, pergunta_sobre_arquivo=(
+            "Calcule faturamento do mês, novos clientes e CAC; gere séries de fluxo de caixa 30 dias e divisão por canal. "
+            "Retorne somente JSON no formato especificado."
+        ) if file_path else None)
+
+        raw = None
+        if result:
+            raw = result.get('resposta_final') or ''
+        data = None
+        if raw:
+            try:
+                data = json.loads(raw)
+            except Exception:
+                # Tenta extrair JSON entre chaves
+                try:
+                    start = raw.find('{')
+                    end = raw.rfind('}')
+                    if start != -1 and end != -1:
+                        data = json.loads(raw[start:end+1])
+                except Exception:
+                    data = None
+        if not data:
+            # Fallback demo seguro
+            data = {
+                "kpis": {"faturamento_mes": 125430, "novos_clientes": 87, "cac": 62.5},
+                "cashflow": {
+                    "labels": [f"D{i}" for i in range(1, 13)],
+                    "entradas": [12,9,14,11,16,13,18,14,17,15,19,18],
+                    "saidas":   [9,8,11,10,12,12,13,12,14,13,15,14]
+                },
+                "channels": {"labels": ["Loja Online","Marketplace","Instagram","WhatsApp"], "values": [46,28,17,9]},
+                "latest_sales": [
+                    {"id":1,"data":"2025-10-25","cliente":"Maria Oliveira","canal":"Loja Online","valor":1290.00,"status":"Pago"},
+                    {"id":2,"data":"2025-10-25","cliente":"João Lima","canal":"Marketplace","valor":349.90,"status":"Pago"},
+                    {"id":3,"data":"2025-10-24","cliente":"Aline Souza","canal":"Instagram","valor":179.00,"status":"Pendente"},
+                ],
+                "insights": [
+                    {"icon":"lightbulb","title":"Campanhas com melhor ROI","text":"Direcione mais orçamento para Instagram Ads (CAC -15%)."},
+                    {"icon":"graph-up","title":"Fluxo de caixa","text":"Previsão de pico de despesas nos próximos 10 dias; considere antecipar recebíveis."}
+                ]
+            }
+        return JsonResponse({"success": True, "data": data})
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+@login_required
+def profile_view(request):
+    """Tela de Perfil para configurar dados padrão da empresa (base de contexto dos agentes)."""
+    company = None
+    try:
+        company = Company.objects.get(user=request.user)
+    except Company.DoesNotExist:
+        company = None
+
+    if request.method == 'POST':
+        # Fluxo: apagar conta
+        if request.POST.get('delete_account') == '1':
+            # Placeholder: apagar conta e dados (LGPD)
+            u = request.user
+            from django.contrib.auth import logout
+            logout(request)
+            u.delete()
+            messages.success(request, 'Sua conta e dados foram removidos.')
+            return redirect('agent:index')
+
+        # Fluxo: upload de dados (form separado)
+        if request.POST.get('upload_file') == '1':
+            data_file = request.FILES.get('data_file')
+            if not data_file:
+                messages.error(request, 'Selecione um arquivo para enviar.')
+                return redirect('agent:profile')
+            # Persistir arquivo em diretório local "uploads"
+            try:
+                upload_dir = settings.BASE_DIR / 'uploads'
+                os.makedirs(upload_dir, exist_ok=True)
+                timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+                safe_name = f"user{request.user.id}_{timestamp}_" + data_file.name
+                dest_path = upload_dir / safe_name
+                with open(dest_path, 'wb+') as destination:
+                    for chunk in data_file.chunks():
+                        destination.write(chunk)
+                # Registrar histórico (exibimos nome original para o usuário)
+                FileUpload.objects.create(user=request.user, file_name=data_file.name)
+                messages.success(request, 'Arquivo enviado com sucesso.')
+            except Exception as e:
+                messages.error(request, f'Falha no upload: {e}')
+            return redirect('agent:profile')
+
+        # Fluxo: salvar perfil (form principal)
+        business_name = request.POST.get('business_name', '').strip()
+        business_type = request.POST.get('business_type', '').strip()
+        target_audience = request.POST.get('target_audience', '').strip()
+
+        # Novos campos
+        years_active = request.POST.get('years_active', '').strip()
+        annual_revenue = request.POST.get('annual_revenue', '').strip()
+        employees = request.POST.get('employees', '').strip()
+        short_description = request.POST.get('short_description', '').strip()
+        competitive_advantage = request.POST.get('competitive_advantage', '').strip()
+        competitors = request.POST.get('competitors', '').strip()
+        primary_goal = request.POST.get('primary_goal', '').strip()
+        main_challenge = request.POST.get('main_challenge', '').strip()
+
+        if not business_name or not business_type or not target_audience:
+            messages.error(request, 'Preencha todos os campos obrigatórios.')
+        else:
+            Company.objects.update_or_create(
+                user=request.user,
+                defaults={
+                    'business_name': business_name,
+                    'business_type': business_type,
+                    'target_audience': target_audience,
+                    'years_active': years_active,
+                    'annual_revenue': annual_revenue,
+                    'employees': employees,
+                    'short_description': short_description,
+                    'competitive_advantage': competitive_advantage,
+                    'competitors': competitors,
+                    'primary_goal': primary_goal,
+                    'main_challenge': main_challenge,
+                }
+            )
+            messages.success(request, 'Perfil salvo com sucesso. Os agentes usarão essas informações como contexto.')
+            return redirect('agent:profile')
+
+    context = {
+        'company': company,
+        'business_type_choices': Company.BUSINESS_TYPE_CHOICES,
+    }
+    return render(request, 'agent/profile.html', context)
+
+@login_required
+def analyses_list_view(request):
+    """Lista de análises do usuário (Caixa de Entrada)."""
+    company = None
+    analyses = []
+    try:
+        company = Company.objects.get(user=request.user)
+        analyses = MarketingAnalysis.objects.filter(company=company).order_by('-created_at')
+    except Company.DoesNotExist:
+        company = None
+        analyses = []
+    return render(request, 'agent/analyses.html', {
+        'analyses': analyses,
+        'company': company,
+    })
+
+@login_required
+def analysis_detail_view(request, analysis_id: int):
+    """Tela de detalhe da análise com abas e gráficos/KPIs."""
+    try:
+        analysis = MarketingAnalysis.objects.select_related('company').get(id=analysis_id, company__user=request.user)
+    except MarketingAnalysis.DoesNotExist:
+        messages.error(request, 'Análise não encontrada.')
+        return redirect('agent:analyses')
+
+    # Dados estruturados para as abas
+    result = analysis.analysis_result or {}
+    insights_text = result.get('insights', '')
+    recommendations = result.get('recommendations', '')
+    growth = result.get('growth_strategies', '')
+    next_steps = result.get('next_steps', '')
+
+    context = {
+        'analysis': analysis,
+        'insights_text': insights_text,
+        'recommendations': recommendations,
+        'growth': growth,
+        'next_steps': next_steps,
+    }
+    return render(request, 'agent/analysis_detail.html', context)

@@ -4,1065 +4,170 @@
 {% block title %}Geração de Conteúdo - Marttin AI{% endblock %}
 
 {% block extra_css %}
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #1e293b 100%);
-        background-attachment: fixed;
-        color: #e2e8f0;
-        line-height: 1.6;
-        min-height: 100vh;
-        overflow-x: hidden;
-    }
-
-    body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: 
-            radial-gradient(circle at 20% 30%, rgba(251, 191, 36, 0.04) 0%, transparent 20%),
-            radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.04) 0%, transparent 20%);
-        pointer-events: none;
-        z-index: -1;
-    }
-
-    .content-container {
-        padding: 20px;
-        max-width: 1400px;
-        margin: 0 auto;
-        position: relative;
-        z-index: 2;
-    }
-
-    /* Header Section */
-    .content-header {
-        background: rgba(15, 23, 42, 0.85);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 20px;
-        padding: 30px;
-        margin-bottom: 30px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-    }
-
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .page-title {
-        font-size: 28px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .page-subtitle {
-        color: #94a3b8;
-        font-size: 16px;
-    }
-
-    /* Content Panel */
-    .content-panel {
-        display: flex;
-        gap: 0;
-        min-height: calc(100vh - 140px);
-        background: rgba(15, 23, 42, 0.85);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 20px;
-        overflow: hidden;
-    }
-
-    .form-section {
-        width: 60%;
-        background: rgba(15, 23, 42, 0.95);
-        border-right: 1px solid rgba(255,255,255,0.1);
-        padding: 40px 50px;
-        overflow-y: auto;
-        flex-shrink: 0;
-    }
-
-    .results-section {
-        flex: 1;
-        width: 40%;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 30px 40px 20px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .section-title {
-        font-size: 24px;
-        font-weight: 700;
-        color: #e2e8f0;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .section-icon {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        color: #1e3a8a;
-    }
-
-    /* Form Styles */
-    .form-group {
-        margin-bottom: 28px;
-    }
-
-    .form-label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #e2e8f0;
-        font-size: 14px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 12px 16px;
-        background: rgba(30, 58, 138, 0.1);
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 12px;
-        color: #e2e8f0;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: rgba(251, 191, 36, 0.5);
-        background: rgba(30, 58, 138, 0.15);
-        box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
-    }
-
-    .form-control::placeholder {
-        color: #64748b;
-    }
-
-    .form-select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-        background-position: right 12px center;
-        background-repeat: no-repeat;
-        background-size: 16px 12px;
-        padding-right: 40px;
-    }
-
-    .input-hint {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 6px;
-    }
-
-    /* Button Styles */
-    .btn-generate {
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        color: #1e3a8a;
-        border: none;
-        padding: 14px 24px;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-        margin-top: 20px;
-    }
-
-    .btn-generate:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 35px rgba(251, 191, 36, 0.3);
-    }
-
-    .btn-generate:disabled {
-        background: #64748b;
-        color: #94a3b8;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
-
-    /* Results Styles */
-    .results-content {
-        flex: 1;
-        padding: 30px 40px;
-        overflow-y: auto;
-        display: none;
-    }
-
-    .results-content.show {
-        display: block;
-    }
-
-    .result-section {
-        background: rgba(30, 58, 138, 0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 16px;
-        padding: 25px;
-        margin-bottom: 25px;
-        transition: all 0.3s ease;
-    }
-
-    .result-section:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        border-color: rgba(251, 191, 36, 0.2);
-    }
-
-    .result-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 18px;
-        font-weight: 600;
-        color: #e2e8f0;
-        margin-bottom: 15px;
-    }
-
-    .result-icon {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #fbbf24, #f59e0b);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        color: #1e3a8a;
-    }
-
-    .result-content {
-        color: #94a3b8;
-        line-height: 1.6;
-        font-size: 14px;
-    }
-
-    /* Loading Styles */
-    .loading-indicator {
-        display: none;
-        text-align: center;
-        padding: 60px 40px;
-        color: #94a3b8;
-    }
-
-    .loading-indicator.show {
-        display: block;
-    }
-
-    .loading-spinner {
-        width: 48px;
-        height: 48px;
-        border: 3px solid rgba(255,255,255,0.1);
-        border-top: 3px solid #fbbf24;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 20px;
-    }
-
-    .loading-title {
-        font-size: 20px;
-        font-weight: 600;
-        color: #e2e8f0;
-        margin-bottom: 10px;
-    }
-
-    .loading-text {
-        font-size: 14px;
-        color: #94a3b8;
-    }
-
-    /* Empty State */
-    .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 60px 40px;
-        text-align: center;
-        color: #64748b;
-    }
-
-    .empty-icon {
-        width: 80px;
-        height: 80px;
-        background: rgba(251, 191, 36, 0.1);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 20px;
-        font-size: 32px;
-        color: #fbbf24;
-    }
-
-    .empty-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #94a3b8;
-        margin-bottom: 8px;
-    }
-
-    .empty-text {
-        font-size: 14px;
-        color: #64748b;
-    }
-
-    /* Quick Templates */
-    .templates-section {
-        margin-top: 25px;
-        margin-bottom: 25px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .templates-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #e2e8f0;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .templates-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 15px;
-    }
-
-    .template-btn {
-        background: rgba(30, 58, 138, 0.1);
-        border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 12px;
-        padding: 15px 10px;
-        color: #e2e8f0;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .template-btn:hover {
-        background: rgba(30, 58, 138, 0.2);
-        border-color: rgba(251, 191, 36, 0.3);
-        transform: translateY(-2px);
-    }
-
-    .template-btn i {
-        font-size: 20px;
-        color: #fbbf24;
-    }
-
-    .template-btn .platform {
-        font-weight: 600;
-        font-size: 13px;
-    }
-
-    .template-btn .tone {
-        color: #94a3b8;
-        font-size: 11px;
-    }
-
-    /* Alert Styles */
-    .success-alert {
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        color: #10b981;
-        padding: 16px;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .error-alert {
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        color: #ef4444;
-        padding: 16px;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    /* Animations */
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .fade-in-up {
-        animation: fadeInUp 0.6s ease-out;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1200px) {
-        .content-panel {
-            flex-direction: column;
-            height: auto;
-        }
-
-        .form-section {
-            width: 100%;
-            border-right: none;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .results-section {
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .content-container {
-            padding: 15px;
-        }
-
-        .content-header {
-            padding: 20px;
-        }
-
-        .header-content {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .page-title {
-            font-size: 24px;
-        }
-
-        .form-section {
-            padding: 20px;
-        }
-
-        .section-header {
-            padding: 20px 30px 15px;
-        }
-
-        .section-title {
-            font-size: 20px;
-        }
-
-        .results-content {
-            padding: 20px 30px;
-        }
-
-        .result-section {
-            padding: 20px;
-        }
-
-        .templates-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 480px) {
-        .content-header {
-            padding: 15px;
-        }
-
-        .page-title {
-            font-size: 20px;
-        }
-
-        .form-section {
-            padding: 15px;
-        }
-
-        .section-header {
-            padding: 15px 20px;
-        }
-
-        .results-content {
-            padding: 15px 20px;
-        }
-
-        .result-section {
-            padding: 15px;
-        }
-
-        .templates-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'agent/css/content_ideas.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="content-container">
-    <!-- Header Section -->
-    <div class="content-header">
-        <div class="header-content">
-            <div class="welcome-text">
-                <h1 class="page-title">
-                    <i class="fas fa-cogs"></i>
-                    Configurações de Conteúdo
-                </h1>
-                <p class="page-subtitle">Preencha as informações abaixo para gerar ideias de conteúdo personalizadas para seu negócio e público-alvo</p>
-            </div>
+<div id="contentIdeasPage" class="ci-page" data-api-url="{% url 'agent:content_ideas_api' %}" data-dashboard-url="{% url 'agent:dashboard_data_api' %}">
+  <div class="widget">
+    <div class="widget-header">
+      <h3><i class="bi bi-stars"></i> Geração de Conteúdo</h3>
+      <p class="subtitle">Defina o contexto e gere ideias personalizadas alinhadas ao seu público.</p>
+    </div>
+  </div>
+
+  <div class="ci-grid">
+    <!-- Coluna Esquerda: Formulário -->
+    <div class="widget ci-form">
+      <div class="widget-header">
+        <h3><i class="bi bi-gear"></i> Configurações</h3>
+      </div>
+      <form id="contentForm">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="business_description">Descrição do Negócio</label>
+          <textarea id="business_description" name="business_description" rows="3" placeholder="Descreva brevemente seu negócio, produtos ou serviços..." required></textarea>
+          <div class="form-hint">Quanto mais detalhes, melhor a personalização das ideias.</div>
         </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="content_type">Tipo de Conteúdo</label>
+            <select id="content_type" name="content_type" required>
+              <option value="">Selecione...</option>
+              <option value="social_media">Posts para Redes Sociais</option>
+              <option value="blog_posts">Artigos para Blog</option>
+              <option value="email_campaigns">Campanhas de Email</option>
+              <option value="ad_copy">Textos para Anúncios</option>
+              <option value="video_scripts">Roteiros para Vídeos</option>
+              <option value="product_descriptions">Descrições de Produtos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="platform">Plataforma</label>
+            <select id="platform" name="platform" required>
+              <option value="">Selecione...</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="twitter">Twitter/X</option>
+              <option value="tiktok">TikTok</option>
+              <option value="youtube">YouTube</option>
+              <option value="website">Website</option>
+              <option value="email">Email</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="target_audience">Público-Alvo</label>
+            <input id="target_audience" name="target_audience" type="text" placeholder="Ex: jovens 18-25 interessados em tecnologia" required />
+          </div>
+          <div class="form-group">
+            <label for="tone">Tom de Voz</label>
+            <select id="tone" name="tone" required>
+              <option value="">Selecione...</option>
+              <option value="professional">Profissional</option>
+              <option value="casual">Casual</option>
+              <option value="friendly">Amigável</option>
+              <option value="authoritative">Autoritativo</option>
+              <option value="humorous">Humorístico</option>
+              <option value="inspirational">Inspiracional</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="keywords">Palavras-chave (opcional)</label>
+            <input id="keywords" name="keywords" type="text" placeholder="Ex: marketing digital, inovação, tecnologia" />
+            <div class="form-hint">Separe por vírgula.</div>
+          </div>
+          <div class="form-group">
+            <label for="quantity">Quantidade</label>
+            <select id="quantity" name="quantity" required>
+              <option value="3">3 ideias</option>
+              <option value="5" selected>5 ideias</option>
+              <option value="10">10 ideias</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Templates Rápidos -->
+        <div class="quick-templates">
+          <div class="qt-header"><i class="bi bi-lightning-charge"></i> Templates Rápidos</div>
+          <div class="qt-grid">
+            <button type="button" class="qt-btn" data-type="social_media" data-platform="instagram" data-tone="casual">
+              <i class="bi bi-instagram"></i>
+              <span>
+                <strong>Instagram</strong>
+                <small>Casual</small>
+              </span>
+            </button>
+            <button type="button" class="qt-btn" data-type="social_media" data-platform="linkedin" data-tone="professional">
+              <i class="bi bi-linkedin"></i>
+              <span>
+                <strong>LinkedIn</strong>
+                <small>Profissional</small>
+              </span>
+            </button>
+            <button type="button" class="qt-btn" data-type="blog_posts" data-platform="website" data-tone="authoritative">
+              <i class="bi bi-file-earmark-text"></i>
+              <span>
+                <strong>Blog</strong>
+                <small>Autoritativo</small>
+              </span>
+            </button>
+            <button type="button" class="qt-btn" data-type="ad_copy" data-platform="facebook" data-tone="friendly">
+              <i class="bi bi-megaphone"></i>
+              <span>
+                <strong>Anúncios</strong>
+                <small>Amigável</small>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary w-full" id="generateBtn">
+          <i class="bi bi-lightbulb"></i>
+          Gerar Ideias
+        </button>
+      </form>
     </div>
 
-    <!-- Content Panel -->
-    <div class="content-panel">
-        <!-- Form Section -->
-        <div class="form-section">
-            <form method="post" id="content-form">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="business_description" class="form-label">Descrição do Negócio</label>
-                    <textarea class="form-control" 
-                              id="business_description" 
-                              name="business_description" 
-                              rows="3" 
-                              placeholder="Descreva brevemente seu negócio, produtos ou serviços..."
-                              required></textarea>
-                    <div class="input-hint">Quanto mais detalhes, melhor será a personalização das ideias</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="content_type" class="form-label">Tipo de Conteúdo</label>
-                    <select class="form-control form-select" id="content_type" name="content_type" required>
-                        <option value="">Selecione o tipo de conteúdo...</option>
-                        <option value="social_media">Posts para Redes Sociais</option>
-                        <option value="blog_posts">Artigos para Blog</option>
-                        <option value="email_campaigns">Campanhas de Email</option>
-                        <option value="ad_copy">Textos para Anúncios</option>
-                        <option value="video_scripts">Roteiros para Vídeos</option>
-                        <option value="product_descriptions">Descrições de Produtos</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="platform" class="form-label">Plataforma</label>
-                    <select class="form-control form-select" id="platform" name="platform" required>
-                        <option value="">Selecione a plataforma...</option>
-                        <option value="instagram">Instagram</option>
-                        <option value="facebook">Facebook</option>
-                        <option value="linkedin">LinkedIn</option>
-                        <option value="twitter">Twitter/X</option>
-                        <option value="tiktok">TikTok</option>
-                        <option value="youtube">YouTube</option>
-                        <option value="website">Website</option>
-                        <option value="email">Email</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="target_audience" class="form-label">Público-Alvo</label>
-                    <input type="text" 
-                           class="form-control" 
-                           id="target_audience" 
-                           name="target_audience" 
-                           placeholder="Ex: jovens de 18-25 anos interessados em tecnologia"
-                           required>
-                    <div class="input-hint">Seja específico sobre idade, interesses e comportamentos</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="tone" class="form-label">Tom de Voz</label>
-                    <select class="form-control form-select" id="tone" name="tone" required>
-                        <option value="">Selecione o tom...</option>
-                        <option value="professional">Profissional</option>
-                        <option value="casual">Casual</option>
-                        <option value="friendly">Amigável</option>
-                        <option value="authoritative">Autoritativo</option>
-                        <option value="humorous">Humorístico</option>
-                        <option value="inspirational">Inspiracional</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="keywords" class="form-label">Palavras-chave (opcional)</label>
-                    <input type="text" 
-                           class="form-control" 
-                           id="keywords" 
-                           name="keywords" 
-                           placeholder="Ex: marketing digital, inovação, tecnologia">
-                    <div class="input-hint">Separe as palavras-chave por vírgula</div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="quantity" class="form-label">Quantidade de Ideias</label>
-                    <select class="form-control form-select" id="quantity" name="quantity" required>
-                        <option value="3">3 ideias</option>
-                        <option value="5" selected>5 ideias</option>
-                        <option value="10">10 ideias</option>
-                    </select>
-                </div>
-
-                <!-- Quick Templates Section -->
-                <div class="templates-section">
-                    <h3 class="templates-title">
-                        <i class="fas fa-bolt"></i>
-                        Templates Rápidos
-                    </h3>
-                    <div class="templates-grid">
-                        <button class="template-btn quick-template" 
-                                data-type="social_media" data-platform="instagram" data-tone="casual">
-                            <i class="fab fa-instagram"></i>
-                            <div class="platform">Instagram</div>
-                            <div class="tone">Casual</div>
-                        </button>
-                        
-                        <button class="template-btn quick-template" 
-                                data-type="social_media" data-platform="linkedin" data-tone="professional">
-                            <i class="fab fa-linkedin"></i>
-                            <div class="platform">LinkedIn</div>
-                            <div class="tone">Profissional</div>
-                        </button>
-                        
-                        <button class="template-btn quick-template" 
-                                data-type="blog_posts" data-platform="website" data-tone="authoritative">
-                            <i class="fas fa-file-alt"></i>
-                            <div class="platform">Blog</div>
-                            <div class="tone">Autoritativo</div>
-                        </button>
-                        
-                        <button class="template-btn quick-template" 
-                                data-type="ad_copy" data-platform="facebook" data-tone="friendly">
-                            <i class="fas fa-bullhorn"></i>
-                            <div class="platform">Anúncio</div>
-                            <div class="tone">Amigável</div>
-                        </button>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-generate" id="generate-btn">
-                    <i class="fas fa-lightbulb"></i>
-                    Gerar Ideias
-                </button>
-            </form>
+    <!-- Coluna Direita: Resultados + Insights -->
+    <div class="ci-right">
+      <div class="widget ci-results">
+        <div class="widget-header">
+          <h3><i class="bi bi-journal-richtext"></i> Ideias Geradas</h3>
         </div>
-
-        <!-- Results Section -->
-        <div class="results-section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <div class="section-icon">
-                        <i class="fas fa-magic"></i>
-                    </div>
-                    <span id="results-title">Ideias Geradas</span>
-                </h2>
-            </div>
-
-            <!-- Empty State -->
-            <div class="empty-state" id="emptyState">
-                <div class="empty-icon">
-                    <i class="fas fa-lightbulb"></i>
-                </div>
-                <h3 class="empty-title">Pronto para criar?</h3>
-                <p class="empty-text">Preencha o formulário ao lado para gerar ideias criativas e personalizadas para seu conteúdo.</p>
-            </div>
-
-            <!-- Loading Indicator -->
-            <div class="loading-indicator" id="loadingIndicator">
-                <div class="loading-spinner"></div>
-                <h3 class="loading-title">Gerando ideias criativas...</h3>
-                <p class="loading-text">Nossa IA está criando conteúdos personalizados para você.</p>
-            </div>
-            
-            <!-- Results Container -->
-            <div class="results-content" id="resultsContainer">
-                <!-- Results will be populated here -->
-            </div>
+        <div id="resultsEmpty" class="empty">
+          <div class="empty-icon"><i class="bi bi-lightbulb"></i></div>
+          <div class="empty-title">Pronto para criar?</div>
+          <div class="empty-text">Preencha o formulário ao lado para gerar ideias criativas e personalizadas.</div>
         </div>
+        <div id="resultsLoading" class="loading" aria-hidden="true">
+          <div class="spinner"></div>
+          <div class="loading-title">Gerando ideias...</div>
+          <div class="loading-text">Nossa IA está criando conteúdos personalizados para você.</div>
+        </div>
+        <div id="resultsContainer" class="results" aria-live="polite"></div>
+      </div>
+
+      <div class="widget ci-insights">
+        <div class="widget-header">
+          <h3><i class="bi bi-graph-up"></i> Insights do Estrategista</h3>
+        </div>
+        <div id="ciInsights" class="insights-list">
+          <div class="insight-item muted">Carregando insights...</div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the page
-    initializeContentPage();
-    
-    // Form submission handler
-    document.getElementById('content-form').addEventListener('submit', handleFormSubmission);
-    
-    // Quick templates handlers
-    const quickTemplates = document.querySelectorAll('.quick-template');
-    quickTemplates.forEach(template => {
-        template.addEventListener('click', handleQuickTemplate);
-    });
-});
-
-function initializeContentPage() {
-    // Show empty state initially
-    showEmptyState();
-    
-    // Add form field animations
-    const formFields = document.querySelectorAll('.form-control');
-    formFields.forEach(field => {
-        field.addEventListener('focus', function() {
-            this.parentElement.classList.add('focused');
-        });
-        
-        field.addEventListener('blur', function() {
-            if (!this.value) {
-                this.parentElement.classList.remove('focused');
-            }
-        });
-    });
-}
-
-async function handleFormSubmission(e) {
-    e.preventDefault();
-    
-    const button = document.getElementById('generate-btn');
-    const form = document.getElementById('content-form');
-    
-    // Show loading state
-    showLoadingState();
-    setButtonLoading(button, true);
-    
-    // Gather form data
-    const formData = new FormData(form);
-    const data = {
-        business_description: formData.get('business_description'),
-        content_type: formData.get('content_type'),
-        platform: formData.get('platform'),
-        target_audience: formData.get('target_audience'),
-        tone: formData.get('tone'),
-        keywords: formData.get('keywords'),
-        quantity: formData.get('quantity')
-    };
-    
-    try {
-        const response = await fetch('{% url "agent:content_ideas_api" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify(data)
-        });
-        
-        const result = await response.json();
-        
-        // Hide loading
-        hideLoadingState();
-        
-        if (result.success) {
-            displayResults(result.ideas, result);
-            showNotification('Ideias geradas com sucesso!', 'success');
-        } else {
-            displayError(result.error || 'Erro ao gerar ideias');
-            showNotification(result.error || 'Erro ao gerar ideias', 'error');
-        }
-    } catch (error) {
-        hideLoadingState();
-        displayError('Erro de conexão. Tente novamente.');
-        showNotification('Erro de conexão. Tente novamente.', 'error');
-        console.error('Content generation error:', error);
-    } finally {
-        // Reset button
-        setButtonLoading(button, false);
-    }
-}
-
-function handleQuickTemplate() {
-    const contentType = this.dataset.type;
-    const platform = this.dataset.platform;
-    const tone = this.dataset.tone;
-    
-    // Fill form fields
-    document.getElementById('content_type').value = contentType;
-    document.getElementById('platform').value = platform;
-    document.getElementById('tone').value = tone;
-    
-    // Scroll to form
-    document.querySelector('.form-section').scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-    });
-    
-    // Focus on business description
-    setTimeout(() => {
-        document.getElementById('business_description').focus();
-    }, 500);
-}
-
-function showEmptyState() {
-    document.getElementById('emptyState').style.display = 'flex';
-    document.getElementById('loadingIndicator').classList.remove('show');
-    document.getElementById('resultsContainer').classList.remove('show');
-}
-
-function showLoadingState() {
-    document.getElementById('emptyState').style.display = 'none';
-    document.getElementById('loadingIndicator').classList.add('show');
-    document.getElementById('resultsContainer').classList.remove('show');
-}
-
-function hideLoadingState() {
-    document.getElementById('loadingIndicator').classList.remove('show');
-}
-
-function setButtonLoading(button, isLoading) {
-    if (isLoading) {
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
-    } else {
-        button.disabled = false;
-        button.innerHTML = '<i class="fas fa-lightbulb"></i> Gerar Ideias';
-    }
-}
-
-function displayResults(ideas, metadata = {}) {
-    const container = document.getElementById('resultsContainer');
-    document.getElementById('emptyState').style.display = 'none';
-    
-    let resultsHtml = `
-        <div class="success-alert fade-in-up">
-            <i class="fas fa-check-circle"></i>
-            <div>Ideias geradas com sucesso!</div>
-        </div>
-    `;
-    
-    ideas.forEach((idea, index) => {
-        resultsHtml += `
-            <div class="result-section fade-in-up" style="animation-delay: ${(index + 1) * 0.1}s">
-                <h3 class="result-title">
-                    <div class="result-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    Ideia ${index + 1}
-                </h3>
-                <div class="result-content">
-                    <p>${idea}</p>
-                </div>
-            </div>
-        `;
-    });
-    
-    // Add metadata if available
-    if (metadata.content_type || metadata.platform) {
-        resultsHtml += `
-            <div class="result-section fade-in-up" style="animation-delay: ${(ideas.length + 1) * 0.1}s">
-                <h3 class="result-title">
-                    <div class="result-icon">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    Detalhes da Geração
-                </h3>
-                <div class="result-content">
-                    ${metadata.content_type ? `<p><strong>Tipo:</strong> ${getContentTypeLabel(metadata.content_type)}</p>` : ''}
-                    ${metadata.platform ? `<p><strong>Plataforma:</strong> ${getPlatformLabel(metadata.platform)}</p>` : ''}
-                    <p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-                </div>
-            </div>
-        `;
-    }
-    
-    container.innerHTML = resultsHtml;
-    container.classList.add('show');
-}
-
-function displayError(message) {
-    const container = document.getElementById('resultsContainer');
-    document.getElementById('emptyState').style.display = 'none';
-    
-    container.innerHTML = `
-        <div class="error-alert fade-in-up">
-            <i class="fas fa-exclamation-triangle"></i>
-            <div>${message}</div>
-        </div>
-    `;
-    container.classList.add('show');
-}
-
-function getContentTypeLabel(type) {
-    const types = {
-        'social_media': 'Posts para Redes Sociais',
-        'blog_posts': 'Artigos para Blog',
-        'email_campaigns': 'Campanhas de Email',
-        'ad_copy': 'Textos para Anúncios',
-        'video_scripts': 'Roteiros para Vídeos',
-        'product_descriptions': 'Descrições de Produtos'
-    };
-    return types[type] || type;
-}
-
-function getPlatformLabel(platform) {
-    const platforms = {
-        'instagram': 'Instagram',
-        'facebook': 'Facebook',
-        'linkedin': 'LinkedIn',
-        'twitter': 'Twitter/X',
-        'tiktok': 'TikTok',
-        'youtube': 'YouTube',
-        'website': 'Website',
-        'email': 'Email'
-    };
-    return platforms[platform] || platform;
-}
-
-// Notification system
-function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    const existingNotifications = document.querySelectorAll('.notification');
-    existingNotifications.forEach(notification => notification.remove());
-    
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-            <span>${message}</span>
-        </div>
-        <button class="notification-close" onclick="this.parentElement.remove()">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
-    
-    // Add notification styles if not present
-    if (!document.querySelector('#notification-styles')) {
-        const style = document.createElement('style');
-        style.id = 'notification-styles';
-        style.textContent = `
-            .notification {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: rgba(15, 23, 42, 0.95);
-                border: 1px solid rgba(255,255,255,0.15);
-                border-radius: 12px;
-                padding: 15px 20px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                z-index: 1000;
-                min-width: 300px;
-                max-width: 400px;
-                backdrop-filter: blur(12px);
-                transform: translateX(100%);
-                transition: transform 0.3s ease;
-            }
-            .notification-show {
-                transform: translateX(0);
-            }
-            .notification-content {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
-            .notification-content i {
-                font-size: 16px;
-            }
-            .notification-content span {
-                color: #e2e8f0;
-                font-size: 14px;
-                font-weight: 500;
-                flex: 1;
-            }
-            .notification-close {
-                background: none;
-                border: none;
-                color: #94a3b8;
-                cursor: pointer;
-                padding: 4px;
-                border-radius: 4px;
-                transition: all 0.2s ease;
-                margin-left: 8px;
-            }
-            .notification-close:hover {
-                color: #e2e8f0;
-                background: rgba(255, 255, 255, 0.1);
-            }
-            .notification-success {
-                border-left: 4px solid #10b981;
-            }
-            .notification-success .notification-content i {
-                color: #10b981;
-            }
-            .notification-error {
-                border-left: 4px solid #ef4444;
-            }
-            .notification-error .notification-content i {
-                color: #ef4444;
-            }
-            .notification-info {
-                border-left: 4px solid #3b82f6;
-            }
-            .notification-info .notification-content i {
-                color: #3b82f6;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    document.body.appendChild(notification);
-    
-    // Trigger animation
-    setTimeout(() => {
-        notification.classList.add('notification-show');
-    }, 100);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        notification.classList.remove('notification-show');
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 300);
-    }, 5000);
-}
-</script>
+<script src="{% static 'agent/js/content_ideas.js' %}"></script>
 {% endblock %}

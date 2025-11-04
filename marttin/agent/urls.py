@@ -23,4 +23,10 @@ urlpatterns = [
     path('api/check-company/', views.check_company, name='check_company'),
     path('api/register-company/', views.register_company, name='register_company'),
     path('api/get-company/', views.get_company, name='get_company'),
+    path('api/dashboard-data/', views.dashboard_data_api, name='dashboard_data_api'),
+    path('perfil/', views.profile_view, name='profile'),
+
+    # Minhas Análises (Caixa de Entrada) e Detalhe
+    path('analises/', views.analyses_list_view, name='analyses'),
+    path('analises/<int:analysis_id>/', views.analysis_detail_view, name='analysis_detail'),
 ]

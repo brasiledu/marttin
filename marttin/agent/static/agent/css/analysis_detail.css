@@ -1,0 +1,86 @@
+/* MARTTIN - Analysis Detail Page */
+:root {
+  --bg: #0f172a;
+  --panel: rgba(255, 255, 255, .04);
+  --border: rgba(255, 255, 255, .08);
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --brand: #fbbf24;
+  --brand-2: #f59e0b;
+}
+
+.header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transition: all .2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-btn:hover {
+  border-color: rgba(251, 191, 36, .25);
+  background: rgba(251, 191, 36, .05);
+}
+
+.tab-btn.active {
+  border-color: rgba(251, 191, 36, .35);
+  color: var(--brand);
+  background: rgba(251, 191, 36, .08);
+}
+
+.tab-panel {
+  display: none;
+  animation: fadeIn .3s ease;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  
+  .tab-btn {
+    white-space: nowrap;
+  }
+}

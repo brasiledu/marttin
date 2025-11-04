@@ -1,0 +1,207 @@
+/* Dashboard layout */
+:root {
+  --bg: #0f172a;
+  --bg-2: #111827;
+  --panel: #0b1324;
+  --panel-2: #111827;
+  --border: rgba(255, 255, 255, .08);
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --brand: rgb(251, 191, 36);
+  --brand-2: #f59e0b;
+  --ok: #22c55e;
+  --warn: #f59e0b;
+  --err: #ef4444;
+}
+
+body {
+  background: var(--bg);
+  background-color: var(--bg);
+}
+
+/* Removido: regras de layout da sidebar/topbar migradas para sidebar.css */
+/* Mantém estilos específicos do conteúdo do dashboard (KPIs, charts, tabelas, insights, modal) */
+
+.content {
+  padding: 16px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.kpi-header {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.kpi-trend {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.kpi-trend.up {
+  color: var(--ok);
+}
+
+.kpi-trend.down {
+  color: #f40303;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.widget {
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Unificar cor de títulos e ícones dos widgets (igual ao título "Faturamento do Mês") */
+.kpi-header span,
+.kpi-header i,
+.widget .widget-header h3,
+.widget .widget-header i,
+.widget h3 i,
+.insights .insight i {
+  color: var(--muted);
+}
+
+.table-responsive {
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  color: var(--text);
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.status.ok {
+  background: rgba(34, 197, 94, .15);
+  color: #22c55e;
+}
+
+.status.pending {
+  background: rgba(245, 158, 11, .15);
+  color: #f59e0b;
+}
+
+.insights {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.insight {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-dialog {
+  background: rgba(15, 23, 42, .98);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 520px;
+  width: 90%;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-body {
+  padding: 14px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #0b1324;
+  border: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.form-hint {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
