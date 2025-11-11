@@ -1,5 +1,10 @@
 import requests
 from langchain_core.tools import Tool
+from pydantic import BaseModel, Field
+
+
+class IpcaArgs(BaseModel):
+    ano: str = Field(..., description="Ano no formato YYYY, ex: 2023")
 
 
 def buscar_dados_ipca(ano: str) -> str:
@@ -15,9 +20,12 @@ def buscar_dados_ipca(ano: str) -> str:
         return f"Não foi possível buscar os dados para o ano {ano}. Erro: {e}"
 
 
-ferramenta_api_ipca = Tool(
-    name="Consultor de Inflação IPCA",
-    # Usamos lambda para garantir que a função seja chamada com o argumento
-    func=lambda ano: buscar_dados_ipca(ano),
-    description="Use esta ferramenta para obter o valor acumulado do IPCA (Índice de Preços ao Consumidor Amplo) para um determinado ano. Você precisa fornecer o ano como entrada."
+ferramenta_api_ipca = Tool.from_function(
+    name="consultor_inflacao_ipca",
+    func=buscar_dados_ipca,
+    description=(
+        "Use esta ferramenta para obter o valor acumulado do IPCA (Índice de Preços ao Consumidor Amplo) "
+        "para um determinado ano (YYYY)."
+    ),
+    args_schema=IpcaArgs,
 )

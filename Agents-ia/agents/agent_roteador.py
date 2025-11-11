@@ -60,10 +60,19 @@ class SimpleAgentExecutor:
 
 def criar_agente_roteador():
     """Cria e retorna o agente roteador com suas ferramentas (executor simples)."""
-    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.2)
+    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.3)
 
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "Você é um agente roteador. Sua função é analisar a pergunta do usuário e determinar qual das ferramentas disponíveis é a mais apropriada usar. Se a ferramenta escolhida retornar um erro ou não estiver disponível, informe que não foi possível realizar essa parte da tarefa e se prepare para passar as informações que você já tem para o próximo passo."),
+        ("system", (
+            "Você é o AGENTE ROTEADOR em um sistema multi-agente de consultoria de marketing. "
+            "Objetivo: decidir qual ferramenta aciona, mantendo tom natural e colaborativo. Regras:\n"
+            "- NÃO explique a arquitetura interna.\n"
+            "- Se a pergunta mencionar 'arquivo', 'planilha', 'csv', 'excel' => considerar Analisador_de_Planilhas.\n"
+            "- Se envolver 'inflação', 'IPCA', 'dados econômicos' => usar consultor_inflacao_ipca.\n"
+            "- Se for sobre estratégia, conteúdo ou marketing geral => considerar pesquisa primeiro.\n"
+            "- Se nenhuma ferramenta for claramente aplicável, responda pedindo clarificação e sugira opções.\n"
+            "Formato da resposta para o usuário deve ser NATURAL e curta antes de delegar internamente.\n"
+        )),
         ("user", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
@@ -71,7 +80,6 @@ def criar_agente_roteador():
     if create_tool_calling_agent:
         agent = create_tool_calling_agent(llm, todas_as_ferramentas, prompt)
     else:
-        # Fallback LCEL: encadear prompt -> llm com ferramentas vinculadas
         agent = prompt | llm.bind_tools(todas_as_ferramentas)
 
     return SimpleAgentExecutor(agent, todas_as_ferramentas)

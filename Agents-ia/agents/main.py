@@ -47,7 +47,7 @@ def node_roteador(state: AgentState) -> AgentState:
         # --- LÓGICA DE ATUALIZAÇÃO DO ESTADO ---
         if nome_ferramenta == "ferramenta_pesquisa":
             state['dados_pesquisa'] = resultado_ferramenta
-        elif nome_ferramenta == "Consultor de Inflação IPCA":
+        elif nome_ferramenta == "consultor_inflacao_ipca":
             state['dados_api'] = resultado_ferramenta
         elif nome_ferramenta == "Analisador_de_Planilhas":
             state['dados_planilha'] = resultado_ferramenta
@@ -67,14 +67,16 @@ def node_estrategista(state: AgentState) -> AgentState:
         "dados_api", "Nenhum dado de mercado externo foi coletado.")
     dados_planilha = state.get(
         "dados_planilha", "Nenhuma planilha foi fornecida para análise.")
+    chat_history = state.get("chat_history", [])
 
     solucao_final = estrategista.invoke({
         "consulta_cliente": consulta_cliente,
         "dados_pesquisa": dados_pesquisa,
         "dados_api": dados_api,
-        "dados_planilha": dados_planilha
+        "dados_planilha": dados_planilha,
+        "chat_history": chat_history,
     })
-    state['resposta_final'] = solucao_final.content
+    state['resposta_final'] = getattr(solucao_final, 'content', str(solucao_final))
     return state
 
 

@@ -5,10 +5,11 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.tools import Tool
 from langchain_qdrant import QdrantVectorStore, FastEmbedSparse, RetrievalMode
-import os
-import sys
 from pathlib import Path
 from dotenv import load_dotenv
+from pydantic import BaseModel, Field
+import os
+import sys
 
 # --- AJUSTE 1: Chamar load_dotenv() no início ---
 load_dotenv()
@@ -118,6 +119,10 @@ except Exception as e:
 
 
 # --- O RESTO DO SCRIPT (4 e 5) ESTÁ CORRETO ---
+class PesquisaArgs(BaseModel):
+    query: str = Field(..., description="Consulta de pesquisa para a base RAG")
+
+
 def pesquisar_conteudo(query: str) -> str:
     """Pesquisa na base de conhecimento e retorna os trechos mais relevantes."""
     if not qdrant_retriever:
@@ -129,10 +134,11 @@ def pesquisar_conteudo(query: str) -> str:
     return f"De acordo com a base de conhecimento, aqui estão os trechos mais relevantes sobre '{query}':\n\n{contexto}"
 
 
-ferramenta_pesquisa = Tool(
+ferramenta_pesquisa = Tool.from_function(
     name="ferramenta_pesquisa",
     func=pesquisar_conteudo,
-    description="Use para pesquisar em uma base de conhecimento especializada sobre estratégias de marketing e vendas."
+    description="Use para pesquisar em uma base de conhecimento especializada sobre estratégias de marketing e vendas.",
+    args_schema=PesquisaArgs,
 )
 
 if __name__ == "__main__":

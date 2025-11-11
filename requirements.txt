@@ -1,45 +1,48 @@
 # Django Framework
-Django>=4.2,<5.0
+Django
 
 # Formatação e renderização de conteúdo
-bleach>=6.0.0,<7.0.0
-Markdown>=3.6,<4.0
-pymdown-extensions>=10.0,<11.0
-Pygments>=2.17,<3.0
+bleach
+Markdown
+pymdown-extensions
+Pygments
 
 # LangChain - Framework para aplicações com LLMs
-langchain>=0.2.0,<0.3.0
-langchain-core>=0.2.0,<0.3.0
-langchain-community>=0.2.0,<0.3.0
+langchain
+langchain-core
+langchain-community
 
 # LangChain - Integrações específicas
-langchain-groq>=0.1.0,<0.2.0
-langchain-huggingface>=0.0.1,<0.1.0
-langchain-qdrant>=0.1.0,<0.2.0
+langchain-groq
+langchain-huggingface
+langchain-qdrant
 
 # LangGraph - Orquestração de agentes multi-step
-langgraph>=0.1.0,<0.2.0
+langgraph
 
 # Qdrant - Vector Database
-qdrant-client>=1.7.0,<2.0.0
+qdrant-client
 
 # Análise de dados
-pandas>=2.0.0,<3.0.0
-openpyxl>=3.1.0,<4.0.0
+pandas
+openpyxl
 
 # Processamento de documentos PDF
-PyPDF2>=3.0.0,<4.0.0
+PyPDF2
 
 # HTTP Requests
-requests>=2.31.0,<3.0.0
+requests
 
 # Variáveis de ambiente
-python-dotenv>=1.0.0,<2.0.0
+python-dotenv
 
 # HuggingFace - Embeddings e modelos
-sentence-transformers>=2.2.0,<3.0.0
-transformers>=4.35.0,<5.0.0
-torch>=2.0.0,<3.0.0
+sentence-transformers
+# transformers 4.41+ é compatível com tokenizers>=0.19 exigido por langchain-huggingface
+transformers
+# Fix para conciliar langchain-huggingface (>=0.19.1) e transformers
+tokenizers
+torch
 
 # FastEmbed - Embeddings rápidos para Qdrant
-fastembed>=0.2.0,<0.3.0
+fastembed
